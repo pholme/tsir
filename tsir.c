@@ -25,7 +25,7 @@ unsigned int next_contact (unsigned int *t, unsigned int nt, unsigned int now) {
 
 	if (now < t[lo]) hi = lo; // the only case lo is correct
 
-	// get a non-zero random integet
+	// get a non-zero random integer
 	do {
 		RND_CHK(1);
 		i = *(g.r++);
