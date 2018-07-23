@@ -1,11 +1,11 @@
-# tsir
-Pretty quick code for the SIR model on temporal networks. It follows the descriptions in this blog post: https://petterhol.me/2018/07/20/getting-down-to-the-brass-tacks-of-sir-on-temporal-networks/
+# Pretty quick code for the SIR model on temporal networks
+It follows the descriptions in this blog post: https://petterhol.me/2018/07/20/getting-down-to-the-brass-tacks-of-sir-on-temporal-networks/
 
 To get it running you need:
 
 1. The Mersenne Twister from here http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/SFMT/ in a parallel directory to the one of the code
 2. Make dictionaries o (for complier object files) and .state (for RNG state files)
-3. Compile it by make (it has some generic optimization flags now). If you want to omit the timing, compile it without the -DTIME flag.
+3. Compile it by make (it has some generic optimization flags now). If you want to omit the timing, compile it without the `-DTIME` flag.
 4. Run it like
 
 ```./tsir nwk/office.csv .state/0 0.2 5```
