@@ -14,6 +14,6 @@ The first argument is the file containing the network. The input format is a bla
 
 The second argument is a RNG state file. If the file does not exist it is generated. When the program exits it overwrites the file with the current state. This arrangement saves a little time of RNG thermalization (or, equivalently, increases the statistic quality vs seeding the RNG by a number). If you want to run the code from the same sequence of random numbers either comment out the line where the state is written to the disk, or copy a state file before every run. If you have many batch jobs in parallel, make sure they each are running with different state files, otherwise reuse the state files as much as possible.
 
-The third argument is the per-link infection rate. The fourth is the recovery rate in time units of the duration of the data. If you have the recovery rate in days, you need to divide it by the duration of the data to get the value that goes here.
+The third argument is the per-contact infection rate. The fourth is the recovery rate in time units of the duration of the data. If you have the recovery rate in days, you need to divide it by the duration of the data to get the value that goes here.
 
 For more comments, see the files. It should a be relatively easy read for a C coder.
