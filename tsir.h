@@ -33,7 +33,7 @@ typedef struct GLOBALS {
 	// OTHER GLOBALS
 	unsigned int nheap, *heap;
 	// OUTBREAK STATS
-	unsigned int s, t, t0;
+	unsigned int s;
 	// FOR RNG
 	uint32_t *rnd, *r; // arrays for random numbers
 	sfmt_t sfmt; // state of random number generator
