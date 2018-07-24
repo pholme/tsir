@@ -75,7 +75,6 @@ void infect () {
 		}
 	}
 
-	if (g.t < n[me].time) g.t = n[me].time;
 	g.s++; // to get the outbreak size
 }
 
@@ -85,7 +84,7 @@ void infect () {
 void sir () {
 	unsigned int i, source;
 	
-	g.t = g.s = 0;
+	g.s = 0;
 	
 	// initialize
 	for (i = 0; i < g.n; i++) n[i].heap = n[i].time = NONE;
@@ -93,7 +92,7 @@ void sir () {
 	// get & infect the source
 
 	source = get_source();
-	g.t0 = n[source].time = get_start_time();
+	n[source].time = get_start_time();
 	n[source].heap = 1;
 	g.heap[g.nheap = 1] = source;
 
