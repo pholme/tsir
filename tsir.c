@@ -25,14 +25,8 @@ unsigned int next_contact (unsigned int *t, unsigned int nt, unsigned int now) {
 
 	if (now < t[lo]) hi = lo; // the only case lo is correct
 
-	// get a non-zero random integer
-	do {
-		RND_CHK(1);
-		i = *(g.r++);
-	} while (i == 0);
-
 	// get a random contact
-	i = hi + (unsigned int) floor(g.logq * log(sfmt_to_real1(i)));
+	i = hi + g.prob[*(g.r++) & 0xffff];
 
 	if (i >= nt) return NONE; // if the contact is too late, skip it
 
@@ -50,6 +44,7 @@ void infect () {
 	del_root(); // take the newly infected off the heap
 
 	if (duration > 0) { // if the duration is zero, no one else can be infected
+		RND_CHK(n[me].deg);
 		n[me].time += duration;
 
 		// go through the neighbors of the infected node . .
@@ -105,7 +100,7 @@ void sir () {
 
 int main (int argc, char *argv[]) {
 	unsigned int i, j;
-	double s1 = 0.0, s2 = 0.0; // for averages
+	double d, s1 = 0.0, s2 = 0.0; // for averages
 	FILE *fp;
 #ifdef TIME
 	struct timespec t0, t1;
@@ -127,8 +122,9 @@ int main (int argc, char *argv[]) {
 	fclose(fp);
 
 	// initialize parameters
-	g.logq = 1.0 / log(1.0 - atof(argv[3]));
-	g.recovery_scale = g.dur / atof(argv[4]);
+	d = 1.0 / log(1.0 - atof(argv[3]));
+	for (i = 0; i < 0x10000; i++)
+		g.prob[i] = (unsigned short) floor(d * log((i + 1) / 65536.0));
 
 	// read state or initialize RNG, start - - - - - - - - - - - - - - - - - - - - - - - -
 	if (sfmt_get_min_array_size32(&g.sfmt) > NRND) {
