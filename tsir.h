@@ -27,7 +27,7 @@
 
 typedef struct GLOBALS {
 	// INPUT PARAMETERS
-	double recovery_scale, logq; // recovery time scale, auxiliary value for infection probs
+	double recovery_scale; // recovery time scale, auxiliary value for infection probs
 	unsigned short prob[0x10001];
 	// NETWORK SPECS
 	unsigned int n, dur;
