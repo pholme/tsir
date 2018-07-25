@@ -11,7 +11,7 @@
 #include "../SFMT/SFMT.h"
 
 #define NAVG 100000 // number of runs for averages
-#define NRND 0x100000 // number of random numbers per batch
+#define NRND 0x10000 // number of random numbers per batch
 #define NREV 1000 // number of iterations to thermalize the RNG
 
 #define NONE (UINT_MAX - 1)
@@ -28,10 +28,11 @@
 typedef struct GLOBALS {
 	// INPUT PARAMETERS
 	double recovery_scale, logq; // recovery time scale, auxiliary value for infection probs
+	unsigned short prob[0x10001];
 	// NETWORK SPECS
 	unsigned int n, dur;
 	// OTHER GLOBALS
-	unsigned int nheap, *heap;
+	unsigned int nheap, *heap, *order, *dstream; // infection order
 	// OUTBREAK STATS
 	unsigned int s;
 	// FOR RNG
@@ -43,7 +44,12 @@ typedef struct GLOBALS {
 typedef struct NODE {
 	unsigned int deg, *nb; // degree, neighbors
 	unsigned int *nc, **t; // ordered number of / list of contact times for bisection serach
-	unsigned int heap, time; // time is 1st the time of infection (for sorting the heap), then the time of recovery (to check if the node is I or R)
+	unsigned int heap, itime, rtime; // time is 1st the time of infection (for sorting the heap), then the time of recovery (to check if the node is I or R)
+	unsigned int parent;
+	// for stats
+	double dstream, dstream0;
+	unsigned int ninfect;
+	double tinfect;
 } NODE;
 
 // heap.c
