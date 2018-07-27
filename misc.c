@@ -10,63 +10,15 @@ extern NODE *n;
 unsigned int *alloc;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// initializing the Mersenne Twister (if its state can't be read from file)
-
-void init_rng () {
-	unsigned int i;
-	struct timespec t;
-	
-	// seed it with numbers from the clock (current seconds + nanoseconds)
-	clock_gettime(CLOCK_MONOTONIC, &t);
-	sfmt_init_gen_rand(&g.sfmt, t.tv_sec + t.tv_nsec);
-	
-	// this is to thermalize the Mersenne Twister . . if seeded by a number
-	// it doesn't produce high quality random numbers for a while . .
-	for (i = 0; i < NREV; i++) sfmt_fill_array32(&g.sfmt, g.rnd, NRND);
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // giving exponential random numbers with mean 'scale'
 
 unsigned int exptime () {
-	uint32_t i = 0;
+	double d = (4294967296 - pcg_32_bounded(4294967295)) / 4294967296.0;
 
-	do {
-		RND_CHK(1);
-		i = *(g.r++);
-	} while (i < 1);
-
-	return (unsigned int) floor(-(log(sfmt_to_real1(i)) * g.recovery_scale));
+	return (unsigned int) floor(-(log(d) * g.recovery_scale));
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// get random int in the range 0 to g.dur - 1
-
-unsigned int get_start_time () {
-	unsigned int i;
-
-	do {
-		RND_CHK(1);
-		i = *(g.r++);
-	} while (i > g.cutoff_dur);
-
-	return i % g.dur; // you can't just do this :)
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// get random int in the range 0 to N - 1
-
-unsigned int get_source () {
-	unsigned int i;
-
-	do {
-		RND_CHK(1);
-		i = *(g.r++);
-	} while (i > g.cutoff_source);
-
-	return i % g.n; // you can't just do this :)
-}
-
 // gets the index of you in me's adjacency list
 
 unsigned int get_index (unsigned int me, unsigned int you) {
@@ -152,4 +104,3 @@ void read_data (FILE *fp) {
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
