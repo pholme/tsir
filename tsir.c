@@ -26,7 +26,7 @@ unsigned int next_contact (unsigned int *t, unsigned int nt, unsigned int now) {
 	if (now < t[lo]) hi = lo; // the only case lo is correct
 
 	// get a random contact
-	i = hi + g.prob[*(g.r++) & 0xffff];
+	i = hi + g.rnd2inx[pcg_16()];
 
 	if (i >= nt) return NONE; // if the contact is too late, skip it
 
@@ -44,7 +44,6 @@ void infect () {
 	del_root(); // take the newly infected off the heap
 
 	if (duration > 0) { // if the duration is zero, no one else can be infected
-		RND_CHK(n[me].deg);
 		n[me].time += duration;
 
 		// go through the neighbors of the infected node . .
@@ -86,8 +85,8 @@ void sir () {
 
 	// get & infect the source
 
-	source = get_source();
-	n[source].time = get_start_time();
+	source = pcg_32_bounded(g.n);
+	n[source].time = pcg_32_bounded(g.dur);
 	n[source].heap = 1;
 	g.heap[g.nheap = 1] = source;
 
@@ -107,8 +106,8 @@ int main (int argc, char *argv[]) {
 #endif
 	
 	// just a help message
-	if (argc != 5) {
-		fprintf(stderr, "usage: ./tsir [nwk file] [r.n.g. state file] [beta] [nu (units of the duration of the data)]\n");
+	if (argc != 4) {
+		fprintf(stderr, "usage: ./tsir [nwk file] [beta] [nu (units of the duration of the data)]\n");
 		return 1;
 	}
 
@@ -121,35 +120,15 @@ int main (int argc, char *argv[]) {
 	read_data(fp);
 	fclose(fp);
 
-	// initialize parameters
-	d = 1.0 / log(1.0 - atof(argv[3]));
-	for (i = 0; i < 0x10000; i++)
-		g.prob[i] = (unsigned short) floor(d * log((i + 1) / 65536.0));
+	pcg_init();
 
-	// read state or initialize RNG, start - - - - - - - - - - - - - - - - - - - - - - - -
-	if (sfmt_get_min_array_size32(&g.sfmt) > NRND) {
-		fprintf(stderr, "can't initialize the r.n.g.\n");
-		return 1;
-	}
-	
-	// an array for random numbers (slightly faster than generating them one by one)
-	g.rnd = malloc(NRND * sizeof(uint32_t));
-	
-	// check if I can read the RNG state from a file
-	fp = fopen(argv[2], "rb");
-	if (fp) {
-		if (1 != fread(&g.sfmt, sizeof(sfmt_t), 1, fp)) {
-			fclose(fp);
-			init_rng(); // if reading fails, then re-initialize it
-		}
-		fclose(fp);
-	} else init_rng(); // initialize from the clock
-	sfmt_fill_array32(&g.sfmt, g.rnd, NRND);
-	g.r = g.rnd;
+	// initialize parameters
+	d = 1.0 / log(1.0 - atof(argv[2]));
+	for (i = 0; i < 0x10000; i++)
+		g.rnd2inx[i] = (unsigned short) floor(d * log((i + 1) / 65536.0));
+	g.recovery_scale = g.dur / atof(argv[3]);
 
 	g.cutoff_source = (4294967295 / g.n) * g.n; // to get the epidemic seeds with equal probability
-	// read state or initialize RNG, stop  - - - - - - - - - - - - - - - - - - - - - - - -
-
 	g.cutoff_dur = (4294967295 / g.dur) * g.dur;
 
 	// allocating the heap (N + 1) because it's indices are 1,...,N
@@ -181,10 +160,6 @@ int main (int argc, char *argv[]) {
 #ifdef TIME
 	printf("time per outbreak (s): %g\n", ((t1.tv_sec - t0.tv_sec) + 1.0e-9 * (t1.tv_nsec - t0.tv_nsec)) / NAVG);
 #endif
-	// save the state of the random number generator
-	fp = fopen(argv[2], "wb");
-	fwrite(&g.sfmt, sizeof(sfmt_t), 1, fp);
-	fclose(fp);
 	
 	// cleaning up
 	for (i = 0; i < g.n; i++) {
@@ -193,7 +168,7 @@ int main (int argc, char *argv[]) {
 		free(n[i].nc);
 		free(n[i].t);
 	}
-	free(g.rnd); free(n); free(g.heap);
+	free(n); free(g.heap);
 	 
 	return 0;
 }
