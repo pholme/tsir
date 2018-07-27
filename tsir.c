@@ -69,7 +69,7 @@ void infect () {
 		}
 	}
 
-	g.s++; // to get the outbreak size
+	g.s[g.ns++] = me; // to get the outbreak size
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -78,10 +78,8 @@ void infect () {
 void sir () {
 	unsigned int i, source;
 	
-	g.s = 0;
+	g.ns = 0;
 	
-	// initialize
-	for (i = 0; i < g.n; i++) n[i].heap = n[i].time = NONE;
 
 	// get & infect the source
 
@@ -92,6 +90,10 @@ void sir () {
 
 	// run the outbreak
 	while (g.nheap) infect();
+
+	// clean
+	for (i = 0; i < g.ns; i++)
+		n[g.s[i]].heap = n[g.s[i]].time = NONE;
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -128,11 +130,12 @@ int main (int argc, char *argv[]) {
 		g.rnd2inx[i] = (unsigned short) floor(d * log((i + 1) / 65536.0));
 	g.recovery_scale = g.dur / atof(argv[3]);
 
-	g.cutoff_source = (4294967295 / g.n) * g.n; // to get the epidemic seeds with equal probability
-	g.cutoff_dur = (4294967295 / g.dur) * g.dur;
-
 	// allocating the heap (N + 1) because it's indices are 1,...,N
 	g.heap = malloc((g.n + 1) * sizeof(unsigned int));
+	g.s = calloc(g.n, sizeof(unsigned int));
+
+	// initialize
+	for (i = 0; i < g.n; i++) n[i].heap = n[i].time = NONE;
 
 #ifdef TIME
 	clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &t0);
@@ -143,8 +146,8 @@ int main (int argc, char *argv[]) {
 		sir();
 
 		// saving stats for averages
-		s1 += (double) g.s;
-		s2 += SQ((double) g.s);
+		s1 += (double) g.ns;
+		s2 += SQ((double) g.ns);
 	}
 
 #ifdef TIME
@@ -168,7 +171,7 @@ int main (int argc, char *argv[]) {
 		free(n[i].nc);
 		free(n[i].t);
 	}
-	free(n); free(g.heap);
+	free(n); free(g.heap); free(g.s);
 	 
 	return 0;
 }
