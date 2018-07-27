@@ -32,7 +32,7 @@ typedef struct GLOBALS {
 	uint32_t state;
 	unsigned int cutoff_source, cutoff_dur; // to get the probabilities right . .
 	// OUTBREAK STATS
-	unsigned int s;
+	unsigned int ns, *s;
 } GLOBALS;
 
 typedef struct NODE {
