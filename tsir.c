@@ -26,7 +26,7 @@ unsigned int next_contact (unsigned int *t, unsigned int nt, unsigned int now) {
 	if (now < t[lo]) hi = lo; // the only case lo is correct
 
 	// get a random contact
-	i = hi + g.rnd2inx[pcg_16()];
+	i = hi + g.rnd2inx[lo = pcg_16()];
 
 	if (i >= nt) return NONE; // if the contact is too late, skip it
 
@@ -80,7 +80,6 @@ void sir () {
 	
 	g.ns = 0;
 	
-
 	// get & infect the source
 
 	source = pcg_32_bounded(g.n);
@@ -92,8 +91,7 @@ void sir () {
 	while (g.nheap) infect();
 
 	// clean
-	for (i = 0; i < g.ns; i++)
-		n[g.s[i]].heap = n[g.s[i]].time = NONE;
+	for (i = 0; i < g.ns; i++) n[g.s[i]].heap = n[g.s[i]].time = NONE;
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -108,10 +106,13 @@ int main (int argc, char *argv[]) {
 #endif
 	
 	// just a help message
-	if (argc != 4) {
-		fprintf(stderr, "usage: ./tsir [nwk file] [beta] [nu (units of the duration of the data)]\n");
+	if ((argc < 4) || (argc > 6)) {
+		fprintf(stderr, "usage: ./tsir [nwk file] [beta] [nu (units of the duration of the data)] <seed>\n");
 		return 1;
 	}
+
+	if (argc == 5) g.state = (uint64_t) strtoull(argv[4], NULL, 10) | 1u;
+	else pcg_init();
 
 	// read network data file
 	fp = fopen(argv[1], "r");
