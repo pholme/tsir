@@ -5,6 +5,8 @@
 // RNG v0.94 http://www.pcg-random.org under the Apache License 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
+// 32-bit Output, 64-bit State: PCG-XSH-RS
+
 #include "tsir.h"
 
 extern GLOBALS g;
@@ -14,7 +16,9 @@ extern GLOBALS g;
 void pcg_init () {
 	int fd;
 	unsigned long sz;
-	uint32_t initstate;
+	uint64_t initstate;
+
+	if (g.state != 0) return;
 
 	fd = open("/dev/random", O_RDONLY);
 	
@@ -23,27 +27,25 @@ void pcg_init () {
 		exit(1);
 	}
 
-	sz = read(fd, &initstate, sizeof(uint32_t));
+	sz = read(fd, &initstate, sizeof(uint64_t));
 	
 	close(fd);
 
-	if (sz < sizeof(uint32_t)) {
+	if (sz < sizeof(uint64_t)) {
 		fprintf(stderr, " can't read /dev/random\n");
 		exit(1);
-	} // If /dev/random gets overloaded by many requests it will fail here
-	// To run batchjobs etc., better generate the seeds at the time you generate the submission files
+	}
 
-	g.state = (initstate + 2891336453U) * 747796405U + 2891336453U;
+	g.state = initstate | 1u;
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 uint32_t pcg_32 () {
-	uint32_t state = g.state, word;
+	uint64_t state = g.state;
 
-	g.state = g.state * 747796405U + 2891336453U;
-	word = ((state >> ((state >> 28u) + 4u)) ^ state) * 277803737u;
-	return (word >> 22u) ^ word;
+	g.state *= 6364136223846793005ULL;
+	return (uint32_t) (((state >> 22u) ^ state) >> ((state >> 61u) + 22u));
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -60,10 +62,15 @@ uint32_t pcg_32_bounded (uint32_t bound) {
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 uint16_t pcg_16 () {
-	uint32_t state = g.state;
+	static unsigned int exist;
 
-	g.state = g.state * 747796405U + 2891336453U;
-	return (uint16_t)(((state >> 11u) ^ state) >> ((state >> 30u) + 11u));
+	if (exist) {
+		exist = 0;
+		return (uint16_t) g.rmem >> 16;
+	}
+	exist = 1;
+	g.rmem = pcg_32();
+	return (uint16_t) g.rmem;
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
