@@ -5,7 +5,7 @@
 // RNG v0.94 http://www.pcg-random.org under the Apache License 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
-// 32-bit Output, 64-bit State: PCG-XSH-RS
+// 32-bit Output, 64-bit State, the PCG-XSH-RR version
 
 #include "tsir.h"
 
@@ -36,16 +36,19 @@ void pcg_init () {
 		exit(1);
 	}
 
-	g.state = initstate | 1u;
+	g.state = (initstate + 1442695040888963407ULL) * 6364136223846793005ULL + 1442695040888963407ULL;
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 uint32_t pcg_32 () {
 	uint64_t state = g.state;
+	uint32_t value, rot;
 
-	g.state *= 6364136223846793005ULL;
-	return (uint32_t) (((state >> 22u) ^ state) >> ((state >> 61u) + 22u));
+	g.state = g.state * 6364136223846793005ULL + 1442695040888963407ULL;
+	value = ((state >> 18u) ^ state) >> 27u;
+	rot = state >> 59u;
+	return (uint32_t) (value >> rot) | (value << ((- rot) & 31));
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -66,7 +69,7 @@ uint16_t pcg_16 () {
 
 	if (exist) {
 		exist = 0;
-		return (uint16_t) g.rmem >> 16;
+		return g.rmem >> 16;
 	}
 	exist = 1;
 	g.rmem = pcg_32();
