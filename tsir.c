@@ -26,7 +26,7 @@ unsigned int next_contact (unsigned int *t, unsigned int nt, unsigned int now) {
 	if (now < t[lo]) hi = lo; // the only case lo is correct
 
 	// get a random contact
-	i = hi + g.rnd2inx[lo = pcg_16()];
+	i = hi + g.rnd2inx[pcg_16()];
 
 	if (i >= nt) return NONE; // if the contact is too late, skip it
 
