@@ -30,7 +30,8 @@ void pcg_init () {
 	if (sz < sizeof(uint32_t)) {
 		fprintf(stderr, " can't read /dev/random\n");
 		exit(1);
-	}
+	} // If /dev/random gets overloaded by many requests it will fail here
+	// To run batchjobs etc., better generate the seeds at the time you generate the submission files
 
 	g.state = (initstate + 2891336453U) * 747796405U + 2891336453U;
 }
