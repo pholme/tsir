@@ -1,10 +1,10 @@
-# Pretty quick code for the SIR model on temporal networks
+# Crazy fast code for the SIR model on temporal networks
 It follows the model descriptions in this blog post: https://petterhol.me/2018/07/20/getting-down-to-the-brass-tacks-of-sir-on-temporal-networks/ The algorithm is discussed here: https://petterhol.me/2018/07/23/crazy-fast-code-for-sir-on-temporal-networks/
 
 To get it running you need:
 
 1. Make a directory o (for complier object files)
-2. Compile it by make (it has some generic optimization flags now). If you want to omit the timing, compile it without the `-DTIME` flag.
+2. Compile it by make and GCC* (it has some generic optimization flags now). If you want to omit the timing, compile it without the `-DTIME` flag.
 3. Run it like
 
 ```./tsir nwk/office.csv 0.2 5```
@@ -14,3 +14,5 @@ The first argument is the file containing the network. The input format is a bla
 The third argument is the per-contact infection rate. The fourth is the recovery rate in time units of the duration of the data. If you have the recovery rate in days, you need to divide it by the duration of the data to get the value that goes here.
 
 For more comments, see the files. It should a be relatively easy read for a C coder.
+
+* Clang does not handle the bit-rotation of the RNG efficiently (according to RNG, for Clang one might want to use another RNG).
