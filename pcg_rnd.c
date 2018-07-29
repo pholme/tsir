@@ -69,7 +69,7 @@ uint16_t pcg_16 () {
 
 	if (exist) {
 		exist = 0;
-		return g.rmem >> 16;
+		return (uint16_t) g.rmem >> 16;
 	}
 	exist = 1;
 	g.rmem = pcg_32();
