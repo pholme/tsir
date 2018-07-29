@@ -48,7 +48,7 @@ uint32_t pcg_32 () {
 	g.state = g.state * 6364136223846793005ULL + 1442695040888963407ULL;
 	value = ((state >> 18u) ^ state) >> 27u;
 	rot = state >> 59u;
-	return (uint32_t) (value >> rot) | (value << ((- rot) & 31));
+	return (value >> rot) | (value << ((- rot) & 31));
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
