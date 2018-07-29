@@ -15,4 +15,4 @@ The third argument is the per-contact infection rate. The fourth is the recovery
 
 For more comments, see the files. It should a be relatively easy read for a C coder.
 
-* Clang does not handle the bit-rotation of the RNG efficiently (according to RNG, for Clang one might want to use another RNG).
+\* Clang does not handle the bit-rotation of the RNG efficiently (according to RNG, for Clang one might want to use another RNG).
