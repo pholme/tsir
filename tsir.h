@@ -30,7 +30,6 @@ typedef struct GLOBALS {
 	unsigned int nheap, *heap;
 	// FOR RND
 	uint64_t state;
-	uint32_t rmem;
 	unsigned int cutoff_source, cutoff_dur; // to get the probabilities right . .
 	// OUTBREAK STATS
 	unsigned int ns, *s;
