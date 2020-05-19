@@ -106,13 +106,12 @@ int main (int argc, char *argv[]) {
 #endif
 	
 	// just a help message
-	if ((argc < 4) || (argc > 6)) {
-		fprintf(stderr, "usage: ./tsir [nwk file] [beta] [nu (units of the duration of the data)] <seed>\n");
+	if (argc != 5) {
+		fprintf(stderr, "usage: ./tsir [nwk file] [beta] [nu (units of the duration of the data)] [seed]\n");
 		return 1;
 	}
 
-	if (argc == 5) g.state = (uint64_t) strtoull(argv[4], NULL, 10) | 1u;
-	else pcg_init();
+	g.state = (uint64_t) strtoull(argv[4], NULL, 10) | 1u;
 
 	// read network data file
 	fp = fopen(argv[1], "r");
@@ -137,10 +136,6 @@ int main (int argc, char *argv[]) {
 
 	// initialize
 	for (i = 0; i < g.n; i++) n[i].heap = n[i].time = NONE;
-
-#ifdef TIME
-	clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &t0);
-#endif
 	
 	// run the simulations and summing for averages
 	for (i = 0; i < NAVG; i++) {
@@ -151,19 +146,12 @@ int main (int argc, char *argv[]) {
 		s2 += SQ((double) g.ns);
 	}
 
-#ifdef TIME
-	clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &t1);
-#endif
-
 	// average
 	s1 /= NAVG;
 	s2 /= NAVG;
 
 	// print result
 	printf("avg. outbreak size: %g (%g)\n", s1, sqrt((s2 - SQ(s1)) / (NAVG - 1)));
-#ifdef TIME
-	printf("time per outbreak (s): %g\n", ((t1.tv_sec - t0.tv_sec) + 1.0e-9 * (t1.tv_nsec - t0.tv_nsec)) / NAVG);
-#endif
 	
 	// cleaning up
 	for (i = 0; i < g.n; i++) {
