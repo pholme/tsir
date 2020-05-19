@@ -101,9 +101,6 @@ int main (int argc, char *argv[]) {
 	unsigned int i, j;
 	double d, s1 = 0.0, s2 = 0.0; // for averages
 	FILE *fp;
-#ifdef TIME
-	struct timespec t0, t1;
-#endif
 	
 	// just a help message
 	if (argc != 5) {
@@ -121,8 +118,6 @@ int main (int argc, char *argv[]) {
 	}
 	read_data(fp);
 	fclose(fp);
-
-	pcg_init();
 
 	// initialize parameters
 	d = 1.0 / log(1.0 - atof(argv[2]));
