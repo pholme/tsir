@@ -57,6 +57,5 @@ extern void quick (unsigned int);
 extern uint16_t pcg_16 ();
 extern uint32_t pcg_32 ();
 extern uint32_t pcg_32_bounded ();
-extern void pcg_init ();
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
