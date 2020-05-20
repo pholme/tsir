@@ -108,7 +108,7 @@ int main (int argc, char *argv[]) {
 		return 1;
 	}
 
-	g.state = (uint64_t) strtoull(argv[4], NULL, 10) | 1u;
+	g.state = (uint64_t) strtoull(argv[4], NULL, 10);
 
 	// read network data file
 	fp = fopen(argv[1], "r");
