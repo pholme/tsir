@@ -17,7 +17,7 @@ uint32_t pcg_32 () {
 	uint64_t state = g.state;
 	uint32_t value, rot;
 
-	g.state = g.state * 6364136223846793005ULL + 1442695040888963407ULL;
+	g.state = g.state * 6364136223846793005ull + 1442695040888963407ull;
 	value = ((state >> 18u) ^ state) >> 27u;
 	rot = state >> 59u;
 	return (value >> rot) | (value << ((- rot) & 31));
@@ -28,10 +28,10 @@ uint32_t pcg_32 () {
 uint32_t pcg_32_bounded (uint32_t bound) {
 	uint32_t threshold = -bound % bound, r;
 
-	for ( ; ; ) {
-		r = pcg_32();
-		if (r >= threshold) return r % bound;
-	}
+	do r = pcg_32();
+	while (r < threshold);
+	
+	return r % bound;
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
