@@ -1,5 +1,5 @@
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// code for temporal network SIR by Petter Holme (2018)
+// code for temporal network SIR by Petter Holme (2018/2020)
 
 // miscellaneous routines for tsir
 
@@ -7,100 +7,54 @@
 
 extern GLOBALS g;
 extern NODE *n;
-unsigned int *alloc;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// giving exponential random numbers with mean 'scale'
+// giving exponential random numbers with mean 'g.recovery_scale'
 
 unsigned int exptime () {
-	double d = (4294967296 - pcg_32_bounded(4294967295)) / 4294967296.0;
+	uint32_t r = pcg_32();
 
-	return (unsigned int) floor(-(log(d) * g.recovery_scale));
+	if (r == 4294967295u) return 0;
+
+	return (unsigned int) (g.a * log((r + 1) / 4294967296.0));
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// gets the index of you in me's adjacency list
+// this routine reads the temporal network from the standard input
+// the format is strict and unflexible (and meant to be assembled by a wrapper)
+// function
 
-unsigned int get_index (unsigned int me, unsigned int you) {
-	unsigned int i;
+void read_data () {
+	unsigned int i, j, me;
 
-	for (i = 0; i < n[me].deg; i++) if (n[me].nb[i] == you) return i;
-
-	// alloc check
-	if (alloc[me] <= n[me].deg) {
-		i = alloc[me];
-		alloc[me] = (n[me].deg > 0) ? 2 * n[me].deg : 1; // double the allocated space
-		n[me].nb = realloc(n[me].nb, alloc[me] * sizeof(unsigned int));
-		n[me].nc = realloc(n[me].nc, alloc[me] * sizeof(unsigned int));
-		n[me].t = realloc(n[me].t, alloc[me] * sizeof(unsigned int *));
-		for ( ; i < alloc[me]; i++) {
-			n[me].nc[i] = n[me].nb[i] = 0;
-			n[me].t[i] = NULL;
-		}
+	if (2 != scanf("%u %u", &g.n, &g.dur)) { // the number of nodes N and duration of the data set
+		fprintf(stderr, "reading error 1\n");
+		exit(1);
 	}
-
-	n[me].nb[n[me].deg++] = you;
-
-	return n[me].deg - 1;
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// reads the network, assumes a contact list with vertex label 0,N-1,
-// ordered in time. If your network has nodes with zero contacts, make sure
-// that none of them is the node with largest index
-
-void read_data (FILE *fp) {
-	unsigned int i, me, you;
-
-	g.n = 0;
-
-	// scan the system size
-	while (2 == fscanf(fp, "%u %u %*u\n", &me, &you)) {
-		if (g.n < me) g.n = me;
-		if (g.n < you) g.n = you;
-	}
-
-	g.n++;
 
 	n = calloc(g.n, sizeof(NODE));
-	alloc = calloc(g.n, sizeof(unsigned int));
 
-	rewind(fp);
-
-	// scan the degrees
-	while (2 == fscanf(fp, "%u %u %*u\n", &me, &you)) {
-		i = get_index(me, you);
-		n[me].nc[i]++;
-		i = get_index(you, me);
-		n[you].nc[i]++;
-	}
-
-	rewind(fp);
-
-	for (me = 0; me < g.n; me++) {
-		for (i = 0; i < n[me].deg; i++) {
+	for (me = 0; me < g.n; me++) { // then for every node
+		if (1 != scanf("%u", &n[me].deg)) { // .. scan the degree
+			fprintf(stderr, "reading error 2\n");
+			exit(1);
+		}
+		n[me].nb = malloc(n[me].deg * sizeof(unsigned int));
+		n[me].nc = malloc(n[me].deg * sizeof(unsigned int));
+		n[me].t = malloc(n[me].deg * sizeof(unsigned int *));
+		for (i = 0; i < n[me].deg; i++) { // for all neighbors of me
+			if (2 != scanf("%u %u", n[me].nb + i, n[me].nc + i)) { // scan the id & number of contacts with that neighbor
+				fprintf(stderr, "reading error 3\n");
+				exit(1);
+			}
 			n[me].t[i] = malloc(n[me].nc[i] * sizeof(unsigned int));
-			n[me].nc[i] = 0;
+			for (j = 0; j < n[me].nc[i]; j++)
+				if (1 != scanf("%u", n[me].t[i] + j)) { // the time of contacts to that neighbor, these need to be sorted in decreasing value of its final element
+					fprintf(stderr, "reading error 4\n");
+					exit(1);
+				}
 		}
 	}
-
-	// scan the times
-	while (3 == fscanf(fp, "%u %u %u\n", &me, &you, &g.dur)) {
-		i = get_index(me, you);
-		n[me].t[i][n[me].nc[i]++] = g.dur;
-		i = get_index(you, me);
-		n[you].t[i][n[you].nc[i]++] = g.dur;
-	}
-
-	// allocate adjacency lists
-	for (i = 0; i < g.n; i++) {
-		n[i].nb = realloc(n[i].nb, n[i].deg * sizeof(unsigned int));
-		n[i].nc = realloc(n[i].nc, n[i].deg * sizeof(unsigned int));
-		n[i].t = realloc(n[i].t, n[i].deg * sizeof(unsigned int *));
-		quick(i); // sort t in decreasing order of its last element
-	}
-
-	free(alloc);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
