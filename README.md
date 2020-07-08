@@ -9,11 +9,11 @@ To get it running you need:
 
 I supply two Python wrappers: One for simply calculating the average outbreak size given a network and the two parameters (per-contact transmission probability and recovery rate). You can run it like:
 
-```python3 tsir_single.py nwk/gallery01.tsv 0.5 2```
+```python3 tsir_single.py gallery01.tsv 0.5 2```
 
 Another python wrapper is for scanning the parameter space (at least a part of it) and plotting a heat map of the outbreak size. You can run that one like:
 
-```python3 tsir_scan.py nwk/gallery01.tsv```
+```python3 tsir_scan.py gallery01.tsv gallery01.pdf```
 
 The first argument is the file containing the network. The input format is a blank-space separated contact list (vertex-id 1, vertex-id 2, time). It will neglect multiple contacts and self-contacts. The example network in the nwk folder comes from: http://www.sociopatterns.org/datasets/
 
