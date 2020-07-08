@@ -10,7 +10,7 @@
 #include <unistd.h>
 #include <stdint.h>
 
-#define NAVG 100000 // number of runs for averages
+#define NAVG 1000000 // number of runs for averages
 
 #define NONE (UINT_MAX - 1)
 #define END UINT_MAX // NONE and END are used in various ways, the only purpose of NONE < END is for the S(x) macro
@@ -22,15 +22,14 @@
 
 typedef struct GLOBALS {
 	// INPUT PARAMETERS
-	double recovery_scale; // recovery time scale, auxiliary value for infection probs
-	unsigned short rnd2inx[0x10001]; // mapping 16-bit random number to index
+	double a; // -1/nu where nu = recovery rate (input nu in units of duration, but internally in units of time steps)
+	unsigned short rnd2inx[0x10000]; // mapping 16-bit random number to index
 	// NETWORK SPECS
 	unsigned int n, dur;
 	// OTHER GLOBALS
 	unsigned int nheap, *heap;
 	// FOR RND
 	uint64_t state;
-	unsigned int cutoff_source, cutoff_dur; // to get the probabilities right . .
 	// OUTBREAK STATS
 	unsigned int ns, *s;
 } GLOBALS;
@@ -46,12 +45,8 @@ extern void up_heap (unsigned int);
 extern void del_root ();
 
 // misc.c
-extern void init_rng ();
-extern void read_data (FILE *);
+extern void read_data ();
 extern unsigned int exptime ();
-
-// quick.c
-extern void quick (unsigned int);
 
 // pcg_rnd.c
 extern uint16_t pcg_16 ();
