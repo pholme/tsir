@@ -19,4 +19,4 @@ The first argument is the file containing the network. The input format is a bla
 
 ## Notes for the July 2020 update
 
-I have tried to simplify the code without making it slower by moving preprocessing to the Python wrapper. (Running the code from Python was anyway more or less needed to conveniently seed the C code with a 64-bit uint.)
+I have tried to simplify the code without making it slower by moving preprocessing to the Python wrapper. (Running the code from Python was anyway more or less needed to conveniently seed the C code with a 64-bit uint.) It uses 10^6 averages, which is probably more than enough for larger data sets.
