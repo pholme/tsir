@@ -1,5 +1,5 @@
 # Crazy fast code for the SIR model on temporal networks
-It follows the model descriptions in this blog post: [https://petterhol.me/2018/07/20/getting-down-to-the-brass-tacks-of-sir-on-temporal-networks/](Getting down to the brass tacks) The algorithm is discussed here: [https://petterhol.me/2018/07/23/crazy-fast-code-for-sir-on-temporal-networks/](Crazy fast code for the SIR model on temporal networks)
+It follows the model descriptions in this blog post: https://petterhol.me/2018/07/20/getting-down-to-the-brass-tacks-of-sir-on-temporal-networks/ The algorithm is discussed here: https://petterhol.me/2018/07/23/crazy-fast-code-for-sir-on-temporal-networks/
 
 To get it running you need:
 
