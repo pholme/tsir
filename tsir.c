@@ -1,5 +1,5 @@
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// code for SIR on temporal networks by Petter Holme (2018)
+// code for SIR on temporal networks by Petter Holme (2018/2020)
 
 #include "tsir.h"
 
@@ -12,9 +12,9 @@ NODE *n;
 // among the rest of the contacts. It returns the time of the infecting contact
 
 unsigned int next_contact (unsigned int *t, unsigned int nt, unsigned int now) {
-	unsigned int i, lo = 0, mid, hi = nt - 1;
+	unsigned int lo = 0, mid, hi = nt - 1;
 
-	if (t[hi] <= now) return END; // no need to search further bcoz .t is sorted
+	if (t[hi] <= now) return END; // no need to search further bcoz t is sorted
 
 	// the actual bisection search
 	do {
@@ -26,12 +26,12 @@ unsigned int next_contact (unsigned int *t, unsigned int nt, unsigned int now) {
 	if (now < t[lo]) hi = lo; // the only case lo is correct
 
 	// get a random contact
-	i = hi + g.rnd2inx[pcg_16()];
+	hi += g.rnd2inx[pcg_16()];
 
-	if (i >= nt) return NONE; // if the contact is too late, skip it
+	if (hi >= nt) return NONE; // if the contact is too late, skip it
 
 	// return the time of the contact
-	return t[i];
+	return t[hi];
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -63,7 +63,7 @@ void infect () {
 						g.heap[++g.nheap] = you;
 						n[you].heap = g.nheap;
 					}
-					up_heap(n[you].heap); // this works bcoz there the only heap relationship that can be violated is the one between you and its parent
+					up_heap(n[you].heap); // this works bcoz the only heap relationship that can be violated is the one between you and its parent
 				}
 			}
 		}
@@ -99,31 +99,24 @@ void sir () {
 
 int main (int argc, char *argv[]) {
 	unsigned int i, j;
-	double d, s1 = 0.0, s2 = 0.0; // for averages
-	FILE *fp;
+	double d, x, s1 = 0.0, s2 = 0.0; // for averages
 	
-	// just a help message
-	if (argc != 5) {
-		fprintf(stderr, "usage: ./tsir [nwk file] [beta] [nu (units of the duration of the data)] [seed]\n");
-		return 1;
-	}
+	g.state = strtoull(argv[3], NULL, 10); // argv[3] is the RNG state
 
-	g.state = (uint64_t) strtoull(argv[4], NULL, 10);
-
-	// read network data file
-	fp = fopen(argv[1], "r");
-	if (!fp) {
-		fprintf(stderr, "can't open '%s'\n", argv[1]);
-		return 1;
-	}
-	read_data(fp);
-	fclose(fp);
+	// read network
+	read_data();
 
 	// initialize parameters
-	d = 1.0 / log(1.0 - atof(argv[2]));
-	for (i = 0; i < 0x10000; i++)
-		g.rnd2inx[i] = (unsigned short) floor(d * log((i + 1) / 65536.0));
-	g.recovery_scale = g.dur / atof(argv[3]);
+	d = atof(argv[1]);
+	if (d < 1.0) {
+		d = 1.0 / log(1.0 - d); // argv[1] is beta
+		for (i = 0; i < 0x10000; i++) {
+			x = d * log((i + 1) / 65536.0);
+			g.rnd2inx[i] = (x > USHRT_MAX) ? USHRT_MAX : (unsigned short) x;
+		}
+	} else for (i = 0; i < 0x10000; i++) g.rnd2inx[i] = 0;
+
+	g.a = -(g.dur / atof(argv[2])); // argv[2] is nu in units of the duration of the data
 
 	// allocating the heap (N + 1) because it's indices are 1,...,N
 	g.heap = malloc((g.n + 1) * sizeof(unsigned int));
@@ -142,11 +135,10 @@ int main (int argc, char *argv[]) {
 	}
 
 	// average
-	s1 /= NAVG;
-	s2 /= NAVG;
+	s1 /= NAVG;	s2 /= NAVG;
 
 	// print result
-	printf("avg. outbreak size: %g (%g)\n", s1, sqrt((s2 - SQ(s1)) / (NAVG - 1)));
+	printf("%g %g\n", s1, sqrt((s2 - SQ(s1)) / (NAVG - 1)));
 	
 	// cleaning up
 	for (i = 0; i < g.n; i++) {
