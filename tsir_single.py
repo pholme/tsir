@@ -1,6 +1,5 @@
 # Python wrapper for the temporal network SIR C code
 
-import numpy as np
 from sys import argv
 from read_run import run, read_network
 
