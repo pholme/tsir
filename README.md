@@ -22,3 +22,5 @@ The last argument is the name of the output figure file. The suffix determines t
 ## Notes for the July 2020 update
 
 I have tried to simplify the code without making it slower by moving preprocessing to the Python wrapper. (Running the code from Python was anyway more or less needed to conveniently seed the C code with a 64-bit uint.) It uses 10^6 averages, which is probably more than enough for larger data sets.
+
+I have refrained from expanding this into a full Python library mostly because the research projects I can imagine building on this code would anyway need to add something to the C program. For example, adding measurements about individual nodes or links should be straightforward.
