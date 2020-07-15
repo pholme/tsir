@@ -112,7 +112,7 @@ int main (int argc, char *argv[]) {
 		d = 1.0 / log(1.0 - d); // argv[1] is beta
 		for (i = 0; i < 0x10000; i++) {
 			x = d * log((i + 1) / 65536.0);
-			g.rnd2inx[i] = (x > USHRT_MAX) ? USHRT_MAX : (unsigned short) x;
+			g.rnd2inx[i] = (x > USHRT_MAX) ? USHRT_MAX : x;
 		}
 	} else for (i = 0; i < 0x10000; i++) g.rnd2inx[i] = 0;
 
@@ -130,12 +130,14 @@ int main (int argc, char *argv[]) {
 		sir();
 
 		// saving stats for averages
-		s1 += (double) g.ns;
-		s2 += SQ((double) g.ns);
+		d = g.ns;
+		s1 += d;
+		s2 += SQ(d);
 	}
 
 	// average
-	s1 /= NAVG;	s2 /= NAVG;
+	s1 /= NAVG;
+	s2 /= NAVG;
 
 	// print result
 	printf("%g %g\n", s1, sqrt((s2 - SQ(s1)) / (NAVG - 1)));
