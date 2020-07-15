@@ -9,7 +9,7 @@ extern GLOBALS g;
 extern NODE *n;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// giving exponential random numbers with mean 'g.recovery_scale'
+// giving exponential random numbers with a mean reciprocal of the recovery rate
 
 unsigned int exptime () {
 	uint32_t r = pcg_32();
