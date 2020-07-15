@@ -11,7 +11,7 @@ I supply two Python wrappers: One for simply calculating the average outbreak si
 
 ```python3 tsir_single.py gallery01.tsv 0.5 2```
 
-The first argument is the file containing the network. The input format is a blank-space separated contact list (vertex-id 1, vertex-id 2, time). It will neglect multiple contacts and self-contacts. The example network in the nwk folder comes from: http://www.sociopatterns.org/datasets/ The second argument is the transmission probability, the third is the recovery rate.
+The first argument is the file containing the network. The input format is a blank-space separated contact list (vertex-id 1, vertex-id 2, time). It will neglect multiple contacts and self-contacts. The example network comes from: http://www.sociopatterns.org/datasets/ The second argument is the transmission probability, the third is the recovery rate.
 
 Another python wrapper is for scanning the parameter space (at least a part of it) and plotting a heat map of the outbreak size. You can run that one like:
 
