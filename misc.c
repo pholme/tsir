@@ -16,7 +16,7 @@ unsigned int exptime () {
 
 	if (r == 4294967295u) return 0;
 
-	return (unsigned int) (g.a * log((r + 1) / 4294967296.0));
+	return g.a * log((r + 1) / 4294967296.0);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
