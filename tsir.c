@@ -11,7 +11,7 @@ NODE *n;
 // then picks the contact that can infect (a chain of bernouilli trials)
 // among the rest of the contacts. It returns the time of the infecting contact
 
-unsigned int next_contact (unsigned int *t, unsigned int nt, unsigned int now) {
+unsigned int contagious_contact (unsigned int *t, unsigned int nt, unsigned int now) {
 	unsigned int lo = 0, mid, hi = nt - 1;
 
 	if (t[hi] <= now) return END; // no need to search further bcoz t is sorted
@@ -51,7 +51,7 @@ void infect () {
 			you = n[me].nb[i];
 			if (S(you)) { // if you is S, you can be infected
 				// find the infection time of you
-				t = next_contact(n[me].t[i], n[me].nc[i], now);
+				t = contagious_contact(n[me].t[i], n[me].nc[i], now);
 				if (t == END) break; // bcoz the sorting of nbs, we can break
 
 				// if the infection time is before when me gets infected,
