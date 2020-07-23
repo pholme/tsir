@@ -12,18 +12,16 @@ NODE *n;
 // among the rest of the contacts. It returns the time of the infecting contact
 
 unsigned int contagious_contact (unsigned int *t, unsigned int nt, unsigned int now) {
-	unsigned int lo = 0, mid, hi = nt - 1;
+	unsigned int lo = 0, mid, hi = nt;
 
-	if (t[hi] <= now) return END; // no need to search further bcoz t is sorted
+	if (t[nt - 1] <= now) return END; // no need to search further bcoz t is sorted
 
 	// the actual bisection search
-	do {
+	while (lo < hi) {
 		mid = (lo + hi) >> 1;
 		if (t[mid] > now) hi = mid;
-		else lo = mid;
-	} while (hi > lo + 1);
-
-	if (now < t[lo]) hi = lo; // the only case lo is correct
+		else lo = mid + 1;
+	}
 
 	// get a random contact
 	hi += g.rnd2inx[pcg_16()];
