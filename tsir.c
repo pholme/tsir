@@ -12,9 +12,9 @@ NODE *n;
 // among the rest of the contacts. It returns the time of the infecting contact
 
 unsigned int contagious_contact (unsigned int *t, unsigned int nt, unsigned int now) {
-	unsigned int lo = 0, mid, hi = nt;
+	unsigned int lo = 0, mid, hi = nt - 1;
 
-	if (t[nt - 1] <= now) return END; // no need to search further bcoz t is sorted
+	if (t[hi] <= now) return END; // no need to search further bcoz t is sorted. Note that the bisection search depends on this line.
 
 	// the actual bisection search
 	while (lo < hi) {
