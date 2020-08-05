@@ -1,5 +1,12 @@
 # Crazy fast code for the SIR model on temporal networks
-It follows the model descriptions in this blog post: https://petterhol.me/2018/07/20/getting-down-to-the-brass-tacks-of-sir-on-temporal-networks/ The algorithm is discussed here: https://petterhol.me/2018/07/23/crazy-fast-code-for-sir-on-temporal-networks/
+This code is described in this preprint https://arxiv.org/abs/2007.14386 So if you need to cite it:
+>@unpublished{holme_tsir,
+>  author={Petter Holme},
+>  title={Fast and principled simulations of the {SIR} model on temporal networks},
+>  note={e-print arXiv:2007.14386},
+>  year=2020}
+>  }
+
 
 To get it running you need:
 
