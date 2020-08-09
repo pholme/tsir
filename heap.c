@@ -45,9 +45,11 @@ void down_heap (unsigned int here) {
 void del_root () {
 
 	n[g.heap[1]].heap = END; // END represents recovered
-	g.heap[1] = g.heap[g.nheap--];
-	n[g.heap[1]].heap = 1;
-	down_heap(1);
+	if (g.nheap > 1) {
+		g.heap[1] = g.heap[g.nheap--];
+		n[g.heap[1]].heap = 1;
+		down_heap(1);
+	} else g.nheap = 0;
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
