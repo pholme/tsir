@@ -59,7 +59,7 @@ def read_network (fname):
 
 def run (nwk, beta, nu):
 
-	assert(beta >= 0.0)
+	assert(beta > 0.0)
 	if (beta > 1):
 		print('beta should be <= 1, so set to 1')
 		beta = 1.0
