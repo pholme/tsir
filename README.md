@@ -24,7 +24,7 @@ Another python wrapper is for scanning the parameter space (at least a part of i
 
 ```python3 tsir_scan.py gallery01.tsv gallery01.pdf```
 
-The last argument is the name of the output figure file. The suffix determines the format.
+The last argument is the name of the output figure file. The suffix determines the image format.
 
 ## Notes for the July 2020 update
 
