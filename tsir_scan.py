@@ -19,7 +19,7 @@ NBETA = 21
 if __name__ == '__main__':
 
 	if len(argv) != 3:
-		print('usage: python3 tsir.py [temporal network] [output file]')
+		print('usage: python3 tsir_scan.py [temporal network] [output file]')
 		exit(1)
 
 	nwk = read_network(argv[1])
